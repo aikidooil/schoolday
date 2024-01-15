@@ -57,9 +57,20 @@ class Handler:
 
     # метод для удаления предмета
     def delete_subject(self):
-        subject = input("Введите ID или название предмета для удаления: ")
-        if subject.isdigit():
-            self.db.delete_subject_by_id(int(subject))
+        subjects = self.db.get_subjects()
+        print("Выберите предмет для удаления:")
+        for i, subject in enumerate(subjects):
+            print(f"{i+1}. {subject[1]} (ID: {subject[0]})")
+        print(f"{len(subjects)+1}. Ввести ID или название предмета самостоятельно")
+        choice = input("Выберите цифру: ")
+        if choice.isdigit() and 1 <= int(choice) <= len(subjects):
+            self.db.delete_subject_by_id(subjects[int(choice)-1][0])
+        elif choice.isdigit() and int(choice) == len(subjects)+1:
+            subject = input("Введите ID или название предмета для удаления: ")
+            if subject.isdigit():
+                self.db.delete_subject_by_id(int(subject))
+            else:
+                self.db.delete_subject_by_name(subject)
         else:
-            self.db.delete_subject_by_name(subject)
+            print("Неправильный выбор, попробуйте еще раз")
         print("Предмет успешно удален.")
