@@ -6,7 +6,7 @@ class Handler:
     # метод добавления предмета
     def update_schedule(self):
         while True:
-            print("Выберите предмет:\n1. Математика\n2. Английский язык\n3. Информатика\n4. Вписать свой")
+            print("Выберите предмет:\n1. Математика\n2. Английский язык\n3. Информатика\n4. Вписать свой\n5. Отменить")
             choice = input("Выберите цифру: ")
             if choice == '1':
                 name = "Математика"
@@ -22,6 +22,8 @@ class Handler:
                 if name.isalpha():
                     break
                 print("Название предмета должно состоять из букв.")
+            elif choice == '5':
+                return
             else:
                 print("Неправильный выбор, попробуйте еще раз")
         while True:
@@ -39,12 +41,13 @@ class Handler:
                 print("Неправильный ввод: кабинет должен быть цифрой.")
         while True:
             try:
-                capacity = int(input("Введите вместимость кабинета: "))
-                if 1 <= capacity <= 30:
+                capacity = int(input("Введите вместимость кабинета (или оставьте пустым для автоматического выбора): "))
+                if 20 <= capacity <= 30:
                     break
-                print("Вместимость наших кабинетов всего 30 человек.")
+                print("Вместимость наших кабинетов всего от 20 до 30 человек.")
             except ValueError:
-                print("Неправильный ввод: вместимость кабинета должна быть цифрой.")
+                capacity = self.db.get_room_capacity(room)
+                break
         self.db.insert_subject(name, teacher, room, capacity)
         print("Расписание успешно обновлено.")
 
@@ -62,6 +65,7 @@ class Handler:
         for i, subject in enumerate(subjects):
             print(f"{i+1}. {subject[1]} (ID: {subject[0]})")
         print(f"{len(subjects)+1}. Ввести ID или название предмета самостоятельно")
+        print(f"{len(subjects)+2}. Отменить")
         choice = input("Выберите цифру: ")
         if choice.isdigit() and 1 <= int(choice) <= len(subjects):
             self.db.delete_subject_by_id(subjects[int(choice)-1][0])
@@ -71,6 +75,8 @@ class Handler:
                 self.db.delete_subject_by_id(int(subject))
             else:
                 self.db.delete_subject_by_name(subject)
+        elif choice.isdigit() and int(choice) == len(subjects)+2:
+            return
         else:
             print("Неправильный выбор, попробуйте еще раз")
         print("Предмет успешно удален.")

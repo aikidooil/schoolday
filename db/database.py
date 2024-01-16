@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+import random
 
 class Database:
     # класс для управления операциями базы данных
@@ -22,6 +23,30 @@ class Database:
             )
         """)
         self.conn.commit()
+        self.create_rooms_table()
+
+    # метод для создания таблицы кабинетов
+    def create_rooms_table(self):
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS Rooms (
+                room INTEGER PRIMARY KEY,
+                capacity INTEGER
+            )
+        """)
+        self.conn.commit()
+        self.create_rooms()
+
+    # создание кабинетов и выбор вместимости кабинетов
+    def create_rooms(self):
+        for i in range(1, 151):
+            capacity = random.randint(20, 30)
+            self.cursor.execute("SELECT room FROM Rooms WHERE room = ?", (i,))
+            room = self.cursor.fetchone()
+            if room is None:
+                self.cursor.execute("""
+                    INSERT INTO Rooms (room, capacity) VALUES (?, ?)
+                """, (i, capacity))
+            self.conn.commit()
 
     # метод для вставки нового предмета
     def insert_subject(self, name, teacher, room, capacity):
@@ -66,3 +91,10 @@ class Database:
             SELECT COUNT(*) FROM Subjects WHERE teacher = ? AND date = ?
         """, (teacher, date))
         return self.cursor.fetchone()[0] < 5
+
+    # получение вместимости
+    def get_room_capacity(self, room):
+        self.cursor.execute("""
+            SELECT capacity FROM Rooms WHERE room = ?
+        """, (room,))
+        return self.cursor.fetchone()[0]
