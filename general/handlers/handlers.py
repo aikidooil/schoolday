@@ -10,11 +10,15 @@ class Handler:
         print("Выберите расписание для обновления:")
         for i, schedule in enumerate(schedules):
             print(f"{i+1}. Расписание за {schedule[0]}")
-        print(f"{len(schedules)+1}. Создать новое расписание")
+        
+        # если расписание уже создано то создать новое можно только завтра
+        if date not in [schedule[0] for schedule in schedules]:
+            print(f"{len(schedules)+1}. Создать новое расписание")
+        
         choice = input("Выберите цифру: ")
         if choice.isdigit() and 1 <= int(choice) <= len(schedules):
             date = schedules[int(choice)-1][0]
-        elif choice.isdigit() and int(choice) == len(schedules)+1:
+        elif choice.isdigit() and int(choice) == len(schedules)+1 and date not in [schedule[0] for schedule in schedules]:
             pass
         else:
             print("Неправильный выбор, попробуйте еще раз")
