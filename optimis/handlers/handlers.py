@@ -77,7 +77,7 @@ class Handler:
         for subject in subjects:
             print(f"Предмет: {subject[1]}, Преподаватель: {subject[2]}, Кабинет: {subject[3]}, Вместимость кабинета: {subject[4]}\n")
 
-    # метод для удаления расписания
+    # метод для удаления предмета
     def delete_subject(self):
         subjects = self.db.get_subjects()
         print("Выберите предмет для удаления:")
