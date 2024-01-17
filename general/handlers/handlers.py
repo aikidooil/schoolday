@@ -54,7 +54,6 @@ class Handler:
         self.db.insert_subject(name, teacher, room, capacity)
         print("Расписание успешно обновлено.")
 
-
     # метод для показа расписания
     def view_schedule(self):
         subjects = self.db.get_subjects()
