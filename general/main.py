@@ -10,7 +10,7 @@ def main():
         # если в базе данных есть расписание
         if db.schedule_exists():
             print("\n1. Обновить расписание")
-            print("2. Посмотреть сегодняшнее расписание")
+            print("2. Посмотреть расписание")
             print("3. Удалить предмет из расписания")
             print("4. Выйти")
         else:
@@ -18,7 +18,10 @@ def main():
             print("4. Выйти")
         choice = input("Выберите цифру: ")
         if choice == '1':
-            handler.update_schedule()
+            if db.schedule_exists():
+                handler.update_schedule()
+            else:
+                handler.create_schedule()
         elif choice == '2' and db.schedule_exists():
             handler.view_schedule()
         elif choice == '3' and db.schedule_exists():

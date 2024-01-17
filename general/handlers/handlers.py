@@ -5,6 +5,29 @@ class Handler:
 
     # метод добавления предмета
     def update_schedule(self):
+        date = self.db.get_today_date()
+        schedules = self.db.get_schedules()
+        print("Выберите расписание для обновления:")
+        for i, schedule in enumerate(schedules):
+            print(f"{i+1}. Расписание за {schedule[0]}")
+        print(f"{len(schedules)+1}. Создать новое расписание")
+        choice = input("Выберите цифру: ")
+        if choice.isdigit() and 1 <= int(choice) <= len(schedules):
+            date = schedules[int(choice)-1][0]
+        elif choice.isdigit() and int(choice) == len(schedules)+1:
+            pass
+        else:
+            print("Неправильный выбор, попробуйте еще раз")
+            return
+        self.add_subject(date)
+
+    # метод создания расписания
+    def create_schedule(self):
+        date = self.db.get_today_date()
+        self.add_subject(date)
+
+    # метод добавления предмета
+    def add_subject(self, date):
         while True:
             print("Выберите предмет:\n1. Математика\n2. Английский язык\n3. Информатика\n4. Вписать свой\n5. Отменить")
             choice = input("Выберите цифру: ")
@@ -30,7 +53,7 @@ class Handler:
             teacher = input("Введите преподавателя: ")
             if not teacher.isalpha():
                 print("Имя преподавателя должно состоять только из букв.")
-            elif not self.db.check_teacher(teacher):
+            elif not self.db.check_teacher(teacher, date):
                 print("Преподаватель может провести до 5 уроков в день.")
             else:
                 break
@@ -43,27 +66,56 @@ class Handler:
             except ValueError:
                 print("Неправильный ввод: кабинет должен быть цифрой.")
         while True:
-            try:
-                capacity = int(input("Введите вместимость кабинета (или оставьте пустым для автоматического выбора): "))
+            capacity_input = input("Введите вместимость кабинета (или оставьте пустым для автоматического выбора): ")
+            if capacity_input == '':
+                capacity = self.db.get_room_capacity(room)
+                break
+            elif capacity_input.isdigit():
+                capacity = int(capacity_input)
                 if 20 <= capacity <= 30:
                     break
                 print("Вместимость наших кабинетов всего от 20 до 30 человек.")
-            except ValueError:
-                capacity = self.db.get_room_capacity(room)
-                break
-        self.db.insert_subject(name, teacher, room, capacity)
+            else:
+                print("Неправильный ввод: вместимость кабинета должна быть числом.")
+        self.db.insert_subject(name, teacher, room, capacity, date)
         print("Расписание успешно обновлено.")
 
     # метод для показа расписания
     def view_schedule(self):
-        subjects = self.db.get_subjects()
-        print("\nСегодняшнее расписание:")
+        dates = self.db.get_dates()
+        print("Выберите дату расписания:")
+        for i, date in enumerate(dates):
+            print(f"{i+1}. Расписание за {date[0]}")
+        print(f"{len(dates)+1}. Введите дату расписания самостоятельно")
+        choice = input("Выберите цифру: ")
+        if choice.isdigit() and 1 <= int(choice) <= len(dates):
+            date = dates[int(choice)-1][0]
+        elif choice.isdigit() and int(choice) == len(dates)+1:
+            date = input("Введите дату расписания (формат YYYY-MM-DD): ")
+        else:
+            print("Неправильный выбор, попробуйте еще раз")
+            return
+        subjects = self.db.get_subjects(date)
+        print(f"\nРасписание за {date}:")
         for subject in subjects:
             print(f"Предмет: {subject[1]}, Преподаватель: {subject[2]}, Кабинет: {subject[3]}, Вместимость кабинета: {subject[4]}")
 
     # метод для удаления предмета
     def delete_subject(self):
-        subjects = self.db.get_subjects()
+        dates = self.db.get_dates()
+        print("Выберите дату расписания:")
+        for i, date in enumerate(dates):
+            print(f"{i+1}. Расписание за {date[0]}")
+        print(f"{len(dates)+1}. Введите дату расписания самостоятельно")
+        choice = input("Выберите цифру: ")
+        if choice.isdigit() and 1 <= int(choice) <= len(dates):
+            date = dates[int(choice)-1][0]
+        elif choice.isdigit() and int(choice) == len(dates)+1:
+            date = input("Введите дату расписания (формат YYYY-MM-DD): ")
+        else:
+            print("Неправильный выбор, попробуйте еще раз")
+            return
+        subjects = self.db.get_subjects(date)
         print("Выберите предмет для удаления:")
         for i, subject in enumerate(subjects):
             print(f"{i+1}. {subject[1]} (ID: {subject[0]})")

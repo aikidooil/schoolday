@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import datetime
+from datetime import date
 import random
 
 class Database:
@@ -49,8 +49,7 @@ class Database:
             self.conn.commit()
 
     # метод для вставки нового предмета
-    def insert_subject(self, name, teacher, room, capacity):
-        date = datetime.now().strftime("%Y-%m-%d")
+    def insert_subject(self, name, teacher, room, capacity, date):
         self.cursor.execute("""
             INSERT INTO Subjects (name, teacher, room, capacity, date) VALUES (?, ?, ?, ?, ?)
         """, (name, teacher, room, capacity, date))
@@ -71,9 +70,16 @@ class Database:
         self.conn.commit()
 
     # получение всех предметов
-    def get_subjects(self):
+    def get_subjects(self, date):
         self.cursor.execute("""
-            SELECT * FROM Subjects WHERE deleted = 0
+            SELECT * FROM Subjects WHERE deleted = 0 AND date = ?
+        """, (date,))
+        return self.cursor.fetchall()
+
+    # получение всех дат
+    def get_dates(self):
+        self.cursor.execute("""
+            SELECT DISTINCT date FROM Subjects WHERE deleted = 0
         """)
         return self.cursor.fetchall()
 
@@ -85,8 +91,7 @@ class Database:
         return self.cursor.fetchone()[0] > 0
 
     # проверка на количество уроков у преподавателя
-    def check_teacher(self, teacher):
-        date = datetime.now().strftime("%Y-%m-%d")
+    def check_teacher(self, teacher, date):
         self.cursor.execute("""
             SELECT COUNT(*) FROM Subjects WHERE teacher = ? AND date = ?
         """, (teacher, date))
@@ -98,3 +103,14 @@ class Database:
             SELECT capacity FROM Rooms WHERE room = ?
         """, (room,))
         return self.cursor.fetchone()[0]
+
+    # получение сегодняшней даты
+    def get_today_date(self):
+        return date.today().strftime("%Y-%m-%d")
+
+    # метод для получения доступных расписаний
+    def get_schedules(self):
+        self.cursor.execute("""
+            SELECT DISTINCT date FROM Subjects WHERE deleted = 0
+        """)
+        return self.cursor.fetchall()
