@@ -6,6 +6,14 @@ def main():
     db = Database()
     handler = Handler(db)
     
+    # словарь действий
+    actions = {
+        '1': lambda: handler.update_schedule() if db.schedule_exists() else handler.create_schedule(),
+        '2': handler.view_schedule,
+        '3': handler.delete_subject,
+        '4': exit
+    }
+    
     while True:
         # если в базе данных есть расписание
         if db.schedule_exists():
@@ -17,17 +25,9 @@ def main():
             print("\n1. Создать расписание")
             print("4. Выйти")
         choice = input("Выберите цифру: ")
-        if choice == '1':
-            if db.schedule_exists():
-                handler.update_schedule()
-            else:
-                handler.create_schedule()
-        elif choice == '2' and db.schedule_exists():
-            handler.view_schedule()
-        elif choice == '3' and db.schedule_exists():
-            handler.delete_subject()
-        elif choice == '4':
-            break
+        action = actions.get(choice)
+        if action:
+            action()
         else:
             print("Неправильный выбор, попробуйте еще раз")
 

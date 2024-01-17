@@ -3,6 +3,10 @@ class Handler:
     def __init__(self, db):
         self.db = db
 
+    # метод для проверки ввода пользователя
+    def check_input(self, choice, length):
+        return choice.isdigit() and 1 <= int(choice) <= length
+
     # метод добавления предмета
     def update_schedule(self):
         date = self.db.get_today_date()
@@ -16,9 +20,9 @@ class Handler:
             print(f"{len(schedules)+1}. Создать новое расписание")
         
         choice = input("Выберите цифру: ")
-        if choice.isdigit() and 1 <= int(choice) <= len(schedules):
+        if self.check_input(choice, len(schedules)):
             date = schedules[int(choice)-1][0]
-        elif choice.isdigit() and int(choice) == len(schedules)+1 and date not in [schedule[0] for schedule in schedules]:
+        elif self.check_input(choice, len(schedules)+1) and date not in [schedule[0] for schedule in schedules]:
             pass
         else:
             print("Неправильный выбор, попробуйте еще раз")
@@ -92,9 +96,9 @@ class Handler:
             print(f"{i+1}. Расписание за {date[0]}")
         print(f"{len(dates)+1}. Введите дату расписания самостоятельно")
         choice = input("Выберите цифру: ")
-        if choice.isdigit() and 1 <= int(choice) <= len(dates):
+        if self.check_input(choice, len(dates)):
             date = dates[int(choice)-1][0]
-        elif choice.isdigit() and int(choice) == len(dates)+1:
+        elif self.check_input(choice, len(dates)+1):
             date = input("Введите дату расписания (формат YYYY-MM-DD): ")
         else:
             print("Неправильный выбор, попробуйте еще раз")
@@ -116,9 +120,9 @@ class Handler:
                 print(f"{i+1}. Расписание за {date[0]}")
             print(f"{len(dates)+1}. Введите дату расписания самостоятельно")
             choice = input("Выберите цифру: ")
-            if choice.isdigit() and 1 <= int(choice) <= len(dates):
+            if self.check_input(choice, len(dates)):
                 date = dates[int(choice)-1][0]
-            elif choice.isdigit() and int(choice) == len(dates)+1:
+            elif self.check_input(choice, len(dates)+1):
                 date = input("Введите дату расписания (формат YYYY-MM-DD): ")
             else:
                 print("Неправильный выбор, попробуйте еще раз")
@@ -134,15 +138,15 @@ class Handler:
                 print(f"{len(subjects)+1}. Ввести ID или название предмета самостоятельно")
                 print(f"{len(subjects)+2}. Отменить")
                 choice = input("Выберите цифру: ")
-                if choice.isdigit() and 1 <= int(choice) <= len(subjects):
+                if self.check_input(choice, len(subjects)):
                     self.db.delete_subject_by_id(subjects[int(choice)-1][0])
-                elif choice.isdigit() and int(choice) == len(subjects)+1:
+                elif self.check_input(choice, len(subjects)+1):
                     subject = input("Введите ID или название предмета для удаления: ")
                     if subject.isdigit():
                         self.db.delete_subject_by_id(int(subject))
                     else:
                         self.db.delete_subject_by_name(subject)
-                elif choice.isdigit() and int(choice) == len(subjects)+2:
+                elif self.check_input(choice, len(subjects)+2):
                     return
                 else:
                     print("Неправильный выбор, попробуйте еще раз")
