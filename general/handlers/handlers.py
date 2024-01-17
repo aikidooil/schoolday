@@ -102,36 +102,44 @@ class Handler:
 
     # метод для удаления предмета
     def delete_subject(self):
-        dates = self.db.get_dates()
-        print("Выберите дату расписания:")
-        for i, date in enumerate(dates):
-            print(f"{i+1}. Расписание за {date[0]}")
-        print(f"{len(dates)+1}. Введите дату расписания самостоятельно")
-        choice = input("Выберите цифру: ")
-        if choice.isdigit() and 1 <= int(choice) <= len(dates):
-            date = dates[int(choice)-1][0]
-        elif choice.isdigit() and int(choice) == len(dates)+1:
-            date = input("Введите дату расписания (формат YYYY-MM-DD): ")
-        else:
-            print("Неправильный выбор, попробуйте еще раз")
-            return
-        subjects = self.db.get_subjects(date)
-        print("Выберите предмет для удаления:")
-        for i, subject in enumerate(subjects):
-            print(f"{i+1}. {subject[1]} (ID: {subject[0]})")
-        print(f"{len(subjects)+1}. Ввести ID или название предмета самостоятельно")
-        print(f"{len(subjects)+2}. Отменить")
-        choice = input("Выберите цифру: ")
-        if choice.isdigit() and 1 <= int(choice) <= len(subjects):
-            self.db.delete_subject_by_id(subjects[int(choice)-1][0])
-        elif choice.isdigit() and int(choice) == len(subjects)+1:
-            subject = input("Введите ID или название предмета для удаления: ")
-            if subject.isdigit():
-                self.db.delete_subject_by_id(int(subject))
+        while True:
+            dates = self.db.get_dates()
+            if not dates:
+                print("Все предметы удалены.")
+                break
+            print("Выберите дату расписания:")
+            for i, date in enumerate(dates):
+                print(f"{i+1}. Расписание за {date[0]}")
+            print(f"{len(dates)+1}. Введите дату расписания самостоятельно")
+            choice = input("Выберите цифру: ")
+            if choice.isdigit() and 1 <= int(choice) <= len(dates):
+                date = dates[int(choice)-1][0]
+            elif choice.isdigit() and int(choice) == len(dates)+1:
+                date = input("Введите дату расписания (формат YYYY-MM-DD): ")
             else:
-                self.db.delete_subject_by_name(subject)
-        elif choice.isdigit() and int(choice) == len(subjects)+2:
-            return
-        else:
-            print("Неправильный выбор, попробуйте еще раз")
-        print("Предмет успешно удален.")
+                print("Неправильный выбор, попробуйте еще раз")
+                continue
+            while True:
+                subjects = self.db.get_subjects(date)
+                if not subjects:
+                    print("Все предметы за эту дату удалены.")
+                    break
+                print("Выберите предмет для удаления:")
+                for i, subject in enumerate(subjects):
+                    print(f"{i+1}. {subject[1]} (ID: {subject[0]})")
+                print(f"{len(subjects)+1}. Ввести ID или название предмета самостоятельно")
+                print(f"{len(subjects)+2}. Отменить")
+                choice = input("Выберите цифру: ")
+                if choice.isdigit() and 1 <= int(choice) <= len(subjects):
+                    self.db.delete_subject_by_id(subjects[int(choice)-1][0])
+                elif choice.isdigit() and int(choice) == len(subjects)+1:
+                    subject = input("Введите ID или название предмета для удаления: ")
+                    if subject.isdigit():
+                        self.db.delete_subject_by_id(int(subject))
+                    else:
+                        self.db.delete_subject_by_name(subject)
+                elif choice.isdigit() and int(choice) == len(subjects)+2:
+                    return
+                else:
+                    print("Неправильный выбор, попробуйте еще раз")
+                print("Предмет успешно удален.")
