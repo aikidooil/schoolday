@@ -1,4 +1,5 @@
 class Handler:
+    # класс для управления вводами и взаимодействием с приложением
     def __init__(self, db):
         self.db = db
         self.subjects = {
@@ -8,7 +9,8 @@ class Handler:
             '4': self.get_custom_subject,
             '5': exit
         }
-
+    
+    # метод для ввода предмета
     def get_custom_subject(self):
         while True:
             name = input("Введите название предмета: ")
@@ -16,13 +18,22 @@ class Handler:
                 return name
             print("Название предмета должно состоять из букв.")
 
+    # метод для ввода преподавателя
     def get_teacher(self):
         while True:
-            teacher = input("Введите преподавателя: ")
-            if teacher.isalpha() and self.db.check_teacher(teacher):
+            try:
+                teacher = input("Введите преподавателя: ")
+                if not teacher.isalpha():
+                    print("Имя преподавателя должно состоять только из букв.")
+                    continue
+                if not self.db.check_teacher(teacher):
+                    print("Преподаватель может провести до 5 уроков в день.")
+                    continue
                 return teacher
-            print("Имя преподавателя должно состоять из букв и преподаватель может провести до 5 уроков в день.")
-
+            except Exception as e:
+                print(f"Произошла ошибка: {str(e)}")
+    
+    # метод для ввода кабинета
     def get_room(self):
         while True:
             try:
@@ -33,6 +44,7 @@ class Handler:
             except ValueError:
                 print("Неправильный ввод: кабинет должен быть цифрой.")
 
+    # метод для ввода вместимости кабинета
     def get_capacity(self, room):
         while True:
             try:
@@ -43,6 +55,7 @@ class Handler:
             except ValueError:
                 return self.db.get_room_capacity(room)
 
+    # обновление расписания метод
     def update_schedule(self):
         while True:
             print("Выберите предмет:\n1. Математика\n2. Английский язык\n3. Информатика\n4. Вписать свой\n5. Отменить")
@@ -57,12 +70,14 @@ class Handler:
                 return
             print("Неправильный выбор, попробуйте еще раз")
 
+    # метод для показа расписания
     def view_schedule(self):
         subjects = self.db.get_subjects()
         print("\nСегодняшнее расписание:")
         for subject in subjects:
             print(f"Предмет: {subject[1]}, Преподаватель: {subject[2]}, Кабинет: {subject[3]}, Вместимость кабинета: {subject[4]}\n")
 
+    # метод для удаления расписания
     def delete_subject(self):
         subjects = self.db.get_subjects()
         print("Выберите предмет для удаления:")

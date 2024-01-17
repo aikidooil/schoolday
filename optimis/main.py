@@ -2,8 +2,10 @@ from db.database import Database
 from handlers.handlers import Handler
 
 def main():
+    # инциализация бд и обработчика
     db = Database()
     handler = Handler(db)
+    # если в базе данных есть расписание
     menu = {
         '1': ('Обновить расписание', handler.update_schedule),
         '2': ('Посмотреть сегодняшнее расписание', handler.view_schedule),
